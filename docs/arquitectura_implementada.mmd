@@ -1,0 +1,33 @@
+%% Arquitectura IMPLEMENTADA PFO3 (coincide con el código)
+%% Concurrencia por HILOS en un solo proceso — no es distribución física
+%% entre servidores.
+flowchart LR
+    subgraph ProcesoCliente["Proceso cliente (cliente/client.py)"]
+        Menu["Menú consola<br/>sin sesión / con sesión"]
+        TCPCliente["Socket TCP<br/>JSON + \\n"]
+    end
+
+    subgraph ProcesoServidor["Proceso servidor (servidor/server.py)"]
+        Coord2["Coordinador TCP<br/>hilo por conexión"]
+        Auth["auth.py<br/>registro / login / logout<br/>Werkzeug + sesiones 1h"]
+        DB["database.py<br/>SQLite pfo3.db<br/>usuarios, sesiones, tareas"]
+    end
+
+    subgraph Motor["Motor (servidor/workers.py)"]
+        Cola["queue.Queue<br/>FIFO de task_id"]
+        Pool["ThreadPoolExecutor<br/>4 workers<br/>misma máquina/proceso"]
+    end
+
+    Menu -->|1| TCPCliente
+    TCPCliente -->|TCP UTF-8, una línea JSON por mensaje, máx 64 KB| Coord2
+
+    Coord2 -->|valida req_id/op/token| Auth
+    Auth -->|lookup| DB
+    Coord2 -->|enviar_tarea| Cola
+    Cola -->|reclamo atómico| Pool
+    Pool -->|PENDIENTE→EN_PROCESO<br/>COMPLETADA/ERROR| DB
+    Coord2 -->|polling consultar_tarea| DB
+    Coord2 -->|respuesta JSON| TCPCliente
+
+    style Pool fill:#fff4cc,stroke:#b8860b;
+    style Cola fill:#e0e7ff,stroke:#4f46e5;

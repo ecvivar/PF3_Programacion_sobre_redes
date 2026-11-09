@@ -1,0 +1,55 @@
+%% Arquitectura CONCEPTUAL / de despliegue PFO3 — NO IMPLEMENTADA
+%% Los componentes sombreado como "conceptual" NO existen en el repositorio.
+%% Solo el bloque "cliente consola -> servidor -> SQLite" está en el código,
+%% y RabbitMQ/PostgreSQL/S3/Nginx/HAProxy se muestran para satisfacer la
+%% consigna de diseño distribuido.
+flowchart LR
+    subgraph Clientes["Clientes (conceptual)"]
+        Web["Cliente web<br/>(navegador)"]
+        Movil["Cliente móvil<br/>(app)"]
+    end
+
+    subgraph Balanceador["Balanceador de carga (conceptual)"]
+        LB["Nginx / HAProxy<br/>HTTPS, round-robin"]
+    end
+
+    subgraph Servidores["Servidores trabajadores (conceptual, múltiples máquinas)"]
+        W1["Servidor worker W1<br/>pool de hilos"]
+        W2["Servidor worker W2<br/>pool de hilos"]
+        Wn["Servidor worker Wn<br/>pool de hilos"]
+    end
+
+    subgraph Mensajeria["Cola de mensajes (conceptual)"]
+        RMQ["RabbitMQ<br/>exchange / queue"]
+    end
+
+    subgraph Datos["Almacenamiento distribuido (conceptual)"]
+        PG[("PostgreSQL<br/>BD relacional")]
+        S3[("Amazon S3<br/>objetos / resultados")]
+    end
+
+    subgraph Coord["Coordinador (conceptual)"]
+        Coord["Servidor coordinador<br/>recibe tareas y las distribuye"]
+    end
+
+    Web -->|HTTPS| LB
+    Movil -->|HTTPS| LB
+    LB -->|TCP| Coord
+    Coord -->|publica task_id| RMQ
+    RMQ -->|dispatch| W1
+    RMQ -->|dispatch| W2
+    RMQ -->|dispatch| Wn
+    W1 -->|guarda estado| PG
+    W2 -->|guarda estado| PG
+    Wn -->|guarda estado| PG
+    W1 -.->|archivos grandes| S3
+    W2 -.->|archivos grandes| S3
+    W1 -->|resultado| Coord
+    W2 -->|resultado| Coord
+    Wn -->|resultado| Coord
+    Coord -->|responde| LB
+
+    classDef conceptual fill:#ffe8cc,stroke:#d97706,stroke-dasharray:5 5;
+    class Web,Movil,LB,W1,W2,Wn,RMQ,PG,S3 conceptual;
+
+    style Coord fill:#d3e8d2,stroke:#2e7d32;

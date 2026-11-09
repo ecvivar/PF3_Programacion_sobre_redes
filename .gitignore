@@ -1,0 +1,36 @@
+# Entornos virtuales y cachés
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+
+# Secretos / entorno
+.env
+.env.*
+
+# Bases de datos locales y auxiliares SQLite
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# Logs y temporales
+*.log
+*.tmp
+*.bak
+~$*
+
+# Archivos del editor
+.vscode/
+.idea/
+*.swp
+*.swo
