@@ -1,3 +1,5 @@
+> **Auditoría y corrección:** consultar [AUDITORIA_UNICA.md](AUDITORIA_UNICA.md). La ejecución actual usa solo la biblioteca estándar de Python; no requiere instalar Werkzeug.
+
 # PFO3 — Rediseño como Sistema Distribuido (Cliente–Servidor)
 
 **Programación sobre Redes — Tecnicatura Superior en Desarrollo de Software, IFTS N.º 29 · 2026**

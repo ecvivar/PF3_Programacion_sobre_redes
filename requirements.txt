@@ -1,1 +1,1 @@
-Werkzeug>=3.0
+# Python 3.10+; sin dependencias externas de ejecución.

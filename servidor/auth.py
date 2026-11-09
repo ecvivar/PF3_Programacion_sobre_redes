@@ -16,7 +16,7 @@ import secrets
 import sqlite3
 from datetime import datetime, timedelta, timezone
 
-from werkzeug.security import generate_password_hash, check_password_hash
+from servidor.passwords import generate_password_hash, check_password_hash
 
 from servidor.database import conectar_db, crear_tablas, ahora_iso
 

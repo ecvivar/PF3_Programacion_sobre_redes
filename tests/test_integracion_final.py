@@ -93,6 +93,20 @@ class TestIntegracionFinal(unittest.TestCase):
         cls.motor.detener()
         cls.tmp.cleanup()
 
+    def test_conexion_persistente_no_expira_por_inactividad(self):
+        """Regresión: el servidor no debe desconectar al usuario mientras usa el menú."""
+        c = Cliente(self.port)
+        try:
+            # El servidor configura el socket aceptado sin límite de inactividad.
+            # Verificamos además que una segunda petición funcione tras una pausa.
+            r1 = c.call("operacion_desconocida")
+            self.assertFalse(r1["ok"])
+            time.sleep(0.2)
+            r2 = c.call("operacion_desconocida")
+            self.assertFalse(r2["ok"])
+        finally:
+            c.close()
+
     def _usuario(self, nombre):
         c = Cliente(self.port)
         try:

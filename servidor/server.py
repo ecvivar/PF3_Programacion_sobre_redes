@@ -50,11 +50,6 @@ def _responder_desde_linea(conexion: socket.socket, linea: bytes, motor=None) ->
     motor: TaskEngine (Etapa 3+). Sin motor solo registro/login funcionan
     si se pasa db_path vía motor; en tests se inyecta motor real.
     """
-    from servidor.auth import registrar_usuario, login, validar_sesion, invalidar_sesion, AuthError
-    from servidor.database import (
-        listar_tareas_usuario, obtener_tarea_usuario,
-    )
-
     try:
         obj = decode_message(linea)
     except MessageTooLargeError as e:
@@ -81,6 +76,8 @@ def _responder_desde_linea(conexion: socket.socket, linea: bytes, motor=None) ->
         send_message(conexion, error_response(req_id, "error_interno", "servidor sin motor de tareas"))
         return True
     db = motor.db_path
+    from servidor.auth import registrar_usuario, login, validar_sesion, invalidar_sesion, AuthError
+    from servidor.database import listar_tareas_usuario, obtener_tarea_usuario
 
     try:
         if op == "registro":
@@ -142,7 +139,9 @@ def handle_client(conexion: socket.socket, addr, motor=None) -> None:
     log(f"cliente conectado desde {addr}")
     reader = LineReader(conexion)
     try:
-        conexion.settimeout(30)
+        # La conexión TCP es persistente: el usuario puede permanecer en el menú
+        # sin enviar solicitudes. No imponer un timeout de inactividad aquí.
+        conexion.settimeout(None)
         while True:
             try:
                 linea = reader.readline()
