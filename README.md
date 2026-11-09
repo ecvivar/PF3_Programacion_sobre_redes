@@ -107,8 +107,9 @@ delimitador, **64 KB** máx. Cada solicitud lleva `req_id` (uuid) y `op`; cada
 respuesta lo repite. Una solicitud por vez dentro de cada conexión (hilo por
 conexión).
 
+**Solicitud (enviar tarea):**
+
 ```json
-// Solicitud (enviar tarea)
 {
   "req_id": "7f3a2d10-3b1e-4c2f-9d4e-5a6b7c8d9e0f",
   "op": "enviar_tarea",
@@ -118,8 +119,9 @@ conexión).
 }
 ```
 
+**Respuesta (éxito, tarea aceptada):**
+
 ```json
-// Respuesta (éxito, tarea aceptada)
 {
   "req_id": "7f3a2d10-3b1e-4c2f-9d4e-5a6b7c8d9e0f",
   "ok": true,
@@ -128,8 +130,9 @@ conexión).
 }
 ```
 
+**Respuesta (error tipificado):**
+
 ```json
-// Respuesta (error tipificado)
 {
   "req_id": "7f3a2d10-3b1e-4c2f-9d4e-5a6b7c8d9e0f",
   "ok": false,
